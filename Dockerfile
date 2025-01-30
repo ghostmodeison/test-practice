@@ -40,3 +40,4 @@ HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
 
 # Start the app
 CMD ["npm", "run", "start"]
+#
