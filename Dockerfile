@@ -1,4 +1,4 @@
-ARG BASE_IMAGE=722163322018.dkr.ecr.ap-south-1.amazonaws.com/node:20.13.1-alpine
+ARG BASE_IMAGE=957779811736.dkr.ecr.ap-south-1.amazonaws.com/node:latest
 FROM ${BASE_IMAGE} As build
 
 LABEL Marketplace-frontend-apisversion="1.0.0.1" \
@@ -25,7 +25,7 @@ RUN npm install
 RUN npm run build
 
 # Final stage
-FROM 722163322018.dkr.ecr.ap-south-1.amazonaws.com/node:20.13.1-alpine
+FROM 957779811736.dkr.ecr.ap-south-1.amazonaws.com/node:latest
 WORKDIR /app
 COPY --from=build /app .
 
@@ -35,8 +35,8 @@ USER node
 EXPOSE 3000
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
-  CMD curl --fail http://staging.marketplace.envr.earth/health || exit 1
+#HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
+ # CMD curl --fail http://staging.marketplace.envr.earth/health || exit 1
 
 # Start the app
 CMD ["npm", "run", "start"]
