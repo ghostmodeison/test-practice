@@ -5,7 +5,7 @@ LABEL Marketplace-frontend-apisversion="1.0.0.1" \
       contact="Compliance Kart" \
       description="A minimal Node.js Docker image for marketplace-frontend application in Staging" \
       base.image="Node" \
-      maintainer="rkumardevops8@gmail.com"
+      maintainer="hello@gmail.com"
 
 ENV TZ=Asia/Kolkata
 
