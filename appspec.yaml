@@ -3,8 +3,8 @@ Resources:
   - TargetService:
       Type: AWS::ECS::Service
       Properties:
-        TaskDefinition: 'arn:aws:ecs:ap-south-1:722163322018:task-definition/Marketplace-Frontend-Task'
+        TaskDefinition: 'arn:aws:ecs:ap-south-1:957779811736:task-definition/Test-CICD-Task:1'
         LoadBalancerInfo:
-          ContainerName: 'Marketplace-Frontend-Container'
+          ContainerName: 'Test-CICD-Container'
           ContainerPort: 3000
         PlatformVersion: 'LATEST'
