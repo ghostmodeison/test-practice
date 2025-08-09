@@ -25,22 +25,15 @@ pipeline {
             }
         }
 
-        stage("Login to ECR") {
+        stage("Login to ECR and Push") {
             steps {
-                echo "🔐 Logging in to AWS ECR"
-                sh """
-                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
-                """
-            }
-        }
-
-        stage("Tag and Push to ECR") {
-            steps {
-                echo "📤 Tagging and pushing Docker image to ECR"
-                sh """
-                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}:${IMAGE_TAG}
-                    docker push ${ECR_REPO_URI}:${IMAGE_TAG}
-                """
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'aws-creds']]) {
+                    sh """
+                        aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
+                        docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}:${IMAGE_TAG}
+                        docker push ${ECR_REPO_URI}:${IMAGE_TAG}
+                    """
+                }
             }
         }
     }
