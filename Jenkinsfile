@@ -5,22 +5,14 @@ pipeline {
     environment {
         IMAGE_NAME = "envr"
         IMAGE_TAG = "${BUILD_NUMBER}"
+        ECR_REPO_URI = "058264451049.dkr.ecr.ap-south-1.amazonaws.com/envr-jenkins"
+        AWS_REGION = "ap-south-1"
     }
 
-    stages { 
-        stage("Hello") {
-            steps {
-                script {
-                    hello()
-                }
-            }
-        }
-
+    stages {
         stage("Code Checkout") {
             steps {
-                script {
-                    clone("https://github.com/ghostmodeison/test-practice", "main")
-                }
+                git branch: 'main', url: 'https://github.com/ghostmodeison/test-practice'
             }
         }
 
@@ -33,12 +25,21 @@ pipeline {
             }
         }
 
-        stage("Run with Docker Compose") {
+        stage("Login to ECR") {
             steps {
-                echo "📦 Deploying locally with Docker Compose"
+                echo "🔐 Logging in to AWS ECR"
                 sh """
-                    docker-compose down || true
-                    docker-compose up -d --build
+                    aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_REPO_URI}
+                """
+            }
+        }
+
+        stage("Tag and Push to ECR") {
+            steps {
+                echo "📤 Tagging and pushing Docker image to ECR"
+                sh """
+                    docker tag ${IMAGE_NAME}:${IMAGE_TAG} ${ECR_REPO_URI}:${IMAGE_TAG}
+                    docker push ${ECR_REPO_URI}:${IMAGE_TAG}
                 """
             }
         }
@@ -46,10 +47,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ App built and running locally on port 3000"
+            echo "✅ App built and pushed to ECR successfully"
         }
         failure {
-            echo "❌ Build/Deploy failed"
+            echo "❌ Build or push failed"
         }
     }
 }
