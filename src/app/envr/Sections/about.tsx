@@ -46,7 +46,7 @@ const About = () => {
           <div className="flex items-center space-x-3 mt-[120px] mb-[48px]">
             <div className="w-4 h-4 bg-brand1-500 rounded-full"></div>
             <p className="font-[500] text-[20px] font-inter  text-black ">
-              Hello Chandan Prajapati
+              Hello Chandan
             </p>
           </div>
 
