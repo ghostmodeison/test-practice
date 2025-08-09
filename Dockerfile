@@ -1,42 +1,33 @@
-ARG BASE_IMAGE=957779811736.dkr.ecr.ap-south-1.amazonaws.com/node:latest
-FROM ${BASE_IMAGE} As build
+# Base image
+FROM node:18-alpine AS build
 
-LABEL Marketplace-frontend-apisversion="1.0.0.1" \
-      contact="Compliance Kart" \
-      description="A minimal Node.js Docker image for marketplace-frontend application in Staging" \
-      base.image="Node" \
-      maintainer="hello@gmail.com"
-
-ENV TZ=Asia/Kolkata
-
-# Set the timezone
-RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
-
+# Set working directory
 WORKDIR /app
-ADD . /app
 
+# Copy package files first for caching
+COPY package*.json ./
 
-# Install dependencies again
-#test123456
- # Install dependencies (this is where npm install will happen)
+# Install dependencies
 RUN npm install
+
+# Copy all source code
+COPY . .
 
 # Build the app
 RUN npm run build
 
-# Final stage
-FROM 957779811736.dkr.ecr.ap-south-1.amazonaws.com/node:latest
+# Final image (using alpine for small size)
+FROM node:18-alpine
+
 WORKDIR /app
+
+# Copy from build stage
 COPY --from=build /app .
 
-# Set a non-root user
+# Use non-root user for security
 USER node
 
 EXPOSE 3000
-
-# Health check
-#HEALTHCHECK --interval=30s --timeout=5s --retries=3 \
- # CMD curl --fail http://staging.marketplace.envr.earth/health || exit 1
 
 # Start the app
 CMD ["npm", "run", "start"]
